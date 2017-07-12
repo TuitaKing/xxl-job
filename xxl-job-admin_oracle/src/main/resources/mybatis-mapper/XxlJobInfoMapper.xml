@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="XxlJobInfoMapper">
+
+	<resultMap id="XxlJobInfo" type="com.xxl.job.admin.core.model.XxlJobInfo" >
+		<result column="id" property="id" jdbcType="INTEGER" />
+
+		<result column="job_group" property="jobGroup" jdbcType="INTEGER"/>
+		<result column="job_cron" property="jobCron" jdbcType="VARCHAR" />
+		<result column="job_desc" property="jobDesc" jdbcType="VARCHAR" />
+
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+
+		<result column="author" property="author" jdbcType="VARCHAR"/>
+		<result column="alarm_email" property="alarmEmail"  jdbcType="VARCHAR"/>
+
+		<result column="executor_route_strategy" property="executorRouteStrategy"  jdbcType="VARCHAR" />
+		<result column="executor_handler" property="executorHandler"  jdbcType="VARCHAR" />
+		<result column="executor_param" property="executorParam"   jdbcType="VARCHAR"/>
+		<result column="executor_block_strategy" property="executorBlockStrategy"  jdbcType="VARCHAR"/>
+		<result column="executor_fail_strategy" property="executorFailStrategy"  jdbcType="VARCHAR" />
+
+		<result column="glue_type" property="glueType"  jdbcType="VARCHAR"/>
+		<result column="glue_source" property="glueSource" jdbcType="CLOB" />
+		<result column="glue_remark" property="glueRemark" jdbcType="VARCHAR"/>
+		<result column="glue_updateTime" property="glueUpdatetime"  jdbcType="TIMESTAMP" />
+		<result column="child_jobkey" property="childJobKey" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,
+		job_group,
+		job_cron,
+		job_desc,
+		add_time ,
+		update_time,
+		author,
+		alarm_email,
+		executor_route_strategy,
+		executor_handler,
+		executor_param,
+		executor_block_strategy,
+		executor_fail_strategy,
+		glue_type,
+		glue_source,
+		glue_remark,
+		glue_updateTime,
+		child_jobkey
+	</sql>
+
+	<select id="pageList" parameterType="java.util.HashMap" resultMap="XxlJobInfo">
+		SELECT <include refid="Base_Column_List" />
+		FROM XXL_TRIGGER_INFO
+		<trim prefix="WHERE" prefixOverrides="AND | OR" >
+			<if test="jobGroup gt 0">
+				AND job_group = #{jobGroup}
+			</if>
+			<if test="executorHandler != null and executorHandler != ''">
+				AND executor_handler like CONCAT(CONCAT('%', #{executorHandler}), '%')
+			</if>
+		</trim>
+		ORDER BY id
+	</select>
+
+	<select id="pageListCount" parameterType="java.util.HashMap" resultType="int">
+		SELECT count(1)
+		FROM XXL_TRIGGER_INFO
+		<trim prefix="WHERE" prefixOverrides="AND | OR" >
+			<if test="jobGroup gt 0">
+				AND job_group = #{jobGroup}
+			</if>
+			<if test="executorHandler != null and executorHandler != ''">
+				AND executor_handler like CONCAT(CONCAT('%', #{executorHandler}), '%')
+			</if>
+		</trim>
+	</select>
+
+	<insert id="save" parameterType="com.xxl.job.admin.core.model.XxlJobInfo"  useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">
+			select TRIGGER_INFO_SEQUENCE.nextval  as id from dual
+		</selectKey>
+		INSERT INTO XXL_TRIGGER_INFO (
+		id,
+		job_group,
+		job_cron,
+		job_desc,
+		add_time,
+		update_time,
+		author,
+		alarm_email,
+		executor_route_strategy,
+		executor_handler,
+		executor_param,
+		executor_block_strategy,
+		executor_fail_strategy,
+		glue_type,
+		glue_source,
+		glue_remark,
+		glue_updatetime,
+		child_jobkey
+		) VALUES (
+		#{id,jdbcType=INTEGER},
+		#{jobGroup,jdbcType=INTEGER},
+		#{jobCron,jdbcType=VARCHAR},
+		#{jobDesc,jdbcType=VARCHAR},
+		#{addTime,jdbcType=TIMESTAMP},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{author,jdbcType=VARCHAR},
+		#{alarmEmail,jdbcType=VARCHAR},
+		#{executorRouteStrategy,jdbcType=VARCHAR},
+		#{executorHandler,jdbcType=VARCHAR},
+		#{executorParam,jdbcType=VARCHAR},
+		#{executorBlockStrategy,jdbcType=VARCHAR},
+		#{executorFailStrategy,jdbcType=VARCHAR},
+		#{glueType,jdbcType=VARCHAR},
+		#{glueSource,jdbcType=CLOB},
+		#{glueRemark,jdbcType=VARCHAR},
+		#{glueUpdatetime,jdbcType=TIMESTAMP},
+		#{childJobKey,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadById" parameterType="java.util.HashMap" resultMap="XxlJobInfo">
+		SELECT <include refid="Base_Column_List" />
+		FROM XXL_TRIGGER_INFO
+		WHERE id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<update id="update" parameterType="com.xxl.job.admin.core.model.XxlJobInfo" >
+		UPDATE XXL_TRIGGER_INFO
+		SET
+		job_cron = #{jobCron,jdbcType=VARCHAR},
+		job_desc = #{jobDesc,jdbcType=VARCHAR},
+		update_time =#{updateTime,jdbcType=TIMESTAMP},
+		author = #{author,jdbcType=VARCHAR},
+		alarm_email = #{alarmEmail,jdbcType=VARCHAR},
+		executor_route_strategy =#{executorRouteStrategy,jdbcType=VARCHAR},
+		executor_handler = #{executorHandler,jdbcType=VARCHAR},
+		executor_param = #{executorParam,jdbcType=VARCHAR},
+		executor_block_strategy =#{executorBlockStrategy,jdbcType=VARCHAR},
+		executor_fail_strategy = #{executorFailStrategy,jdbcType=VARCHAR},
+		glue_type = #{glueType,jdbcType=VARCHAR},
+		glue_source = #{glueSource,jdbcType=CLOB},
+		glue_remark = #{glueRemark,jdbcType=VARCHAR},
+		glue_updatetime = #{glueUpdatetime,jdbcType=TIMESTAMP},
+		child_jobkey = #{childJobKey,jdbcType=VARCHAR}
+		WHERE id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<delete id="delete" parameterType="java.util.HashMap">
+		DELETE
+		FROM XXL_TRIGGER_INFO
+		WHERE id =#{id,jdbcType=INTEGER}
+	</delete>
+
+	<select id="getJobsByGroup" parameterType="java.util.HashMap" resultMap="XxlJobInfo">
+		SELECT <include refid="Base_Column_List" />
+		FROM XXL_TRIGGER_INFO
+		WHERE job_group = #{jobGroup,jdbcType=INTEGER}
+	</select>
+
+	<select id="findAllCount" resultType="int">
+		SELECT count(1)
+		FROM XXL_TRIGGER_INFO
+	</select>
+
+</mapper>
